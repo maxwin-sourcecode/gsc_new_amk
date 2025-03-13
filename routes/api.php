@@ -79,7 +79,7 @@ Route::group(['prefix' => 'Seamless'], function () {
     Route::post('Jackpot', [NewJackpotController::class, 'jackPot']);
 
     Route::post('MobileLogin', [MobileLoginController::class, 'MobileLogin']);
-    // });
+    //});
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'checkBanned']], function () {
