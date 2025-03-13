@@ -166,9 +166,7 @@ trait NewVersionOptimizedBettingProcess
                     $game_type_product = GameTypeProduct::where('game_type_id', $game_type->id)
                         ->where('product_id', $product->id)
                         ->first();
-                    // if (! $game_type_product) {
-                    //     throw new \Exception('GameTypeProduct combination not found.');
-                    // }
+
 
                     $rate = $game_type_product->rate;  // Fetch rate for this transaction
 
