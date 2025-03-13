@@ -12,6 +12,11 @@ use App\Services\Slot\SlotWebhookService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Http;
+use App\Models\Admin\GameType;
+use App\Models\Admin\Product;
+use App\Models\Admin\GameTypeProduct;
+
 
 class PlaceBetNewVersionController extends Controller
 {
@@ -96,6 +101,14 @@ class PlaceBetNewVersionController extends Controller
                 $fromUser = $request->getMember();
                 $toUser = User::adminUser();  // Admin or central system wallet
 
+                // Fetch the rate from GameTypeProduct before calling processTransfer()
+                $game_type = GameType::where('code', $transaction->GameType)->first();
+                $product = Product::where('code', $transaction->ProductID)->first();
+                $game_type_product = GameTypeProduct::where('game_type_id', $game_type->id)
+                    ->where('product_id', $product->id)
+                    ->first();
+                $rate = $game_type_product->rate;
+
                 $meta = [
                     'wager_id' => $transaction->WagerID,               // Use object property access
                     'event_id' => $request->getMessageID(),
@@ -108,7 +121,7 @@ class PlaceBetNewVersionController extends Controller
                     $toUser,                          // To user (admin/system wallet)
                     TransactionName::Stake,           // Transaction name (e.g., Stake)
                     $transaction->TransactionAmount,  // Use object property access for TransactionAmount
-                    $transaction->Rate,               // Use object property access for Rate
+                    $rate,               // Use object property access for Rate
                     $meta                             // Meta data (wager id, event id, etc.)
                 );
             }

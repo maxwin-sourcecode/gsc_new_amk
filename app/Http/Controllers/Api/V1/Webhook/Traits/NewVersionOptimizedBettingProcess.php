@@ -15,6 +15,8 @@ use App\Services\WalletService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log;
+
 
 trait NewVersionOptimizedBettingProcess
 {
