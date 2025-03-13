@@ -193,7 +193,7 @@ trait NewVersionOptimizedBettingProcess
                             'game_type_id' => $transactionData['GameType'],
                             'product_id' => $transactionData['ProductID'],
                             'seamless_transaction_id' => $transactionData['TransactionID'],
-                            'rate' => $transactionData['Rate'],
+                            'rate' => $rate,  // Include rate for the transaction
                             'transaction_amount' => $transactionData['TransactionAmount'],
                             'bet_amount' => $transactionData['BetAmount'],
                             'valid_amount' => $transactionData['ValidBetAmount'],
