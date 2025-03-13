@@ -14,8 +14,8 @@ use App\Models\Wager;
 use App\Services\WalletService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 trait ApiWebhook
 {
@@ -30,7 +30,7 @@ trait ApiWebhook
             }
         });
 
-        return count($bets) . ' bets inserted successfully.';
+        return count($bets).' bets inserted successfully.';
     }
 
     public function createWagerTransactions(array $betBatch, SeamlessEvent $event)
@@ -77,11 +77,11 @@ trait ApiWebhook
                         ];
                     }
 
-                    if (!empty($wagerData)) {
+                    if (! empty($wagerData)) {
                         DB::table('wagers')->insert($wagerData);
                     }
 
-                    if (!empty($seamlessTransactionsData)) {
+                    if (! empty($seamlessTransactionsData)) {
                         DB::table('seamless_transactions')->insert($seamlessTransactionsData);
                     }
                 });

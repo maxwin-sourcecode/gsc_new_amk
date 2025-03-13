@@ -36,14 +36,14 @@ class PromotionController extends Controller
         $request->validate([
             'image' => 'required',
         ]);
-   // image
-   $image = $request->file('image');
-   $ext = $image->getClientOriginalExtension();
-   $filename = uniqid('promotion').'.'.$ext; // Generate a unique filename
-   $image->move(public_path('assets/img/promotions/'), $filename); // Save the file
+        // image
+        $image = $request->file('image');
+        $ext = $image->getClientOriginalExtension();
+        $filename = uniqid('promotion').'.'.$ext; // Generate a unique filename
+        $image->move(public_path('assets/img/promotions/'), $filename); // Save the file
 
         Promotion::create([
-            'image' => $filename
+            'image' => $filename,
         ]);
 
         return redirect()->route('admin.promotions.index')->with('success', 'New Promotion Created Successfully.');
@@ -77,7 +77,7 @@ class PromotionController extends Controller
             $image->move(public_path('assets/img/promotions/'), $filename);
 
             $promotion->update([
-                'image' => $filename 
+                'image' => $filename,
             ]);
 
             return redirect()->route('admin.promotions.index')->with('success', 'Promotion Updated');

@@ -32,9 +32,9 @@ use App\Http\Controllers\Api\V1\Webhook\PushBetController;
 use App\Http\Controllers\Api\V1\Webhook\RollbackController;
 use App\Http\Controllers\Api\V1\Webhook\TestingController;
 use Illuminate\Support\Facades\Route;
+
 // use App\Http\Controllers\Api\V1\NewVersion\NewBonusController;
 // use App\Http\Controllers\Api\V1\NewVersion\NewJackpotController;
-
 
 //login route post
 Route::post('/login', [AuthController::class, 'login']);

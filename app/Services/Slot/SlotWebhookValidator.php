@@ -177,7 +177,6 @@ class SlotWebhookValidator
             // $transaction['Rate'] = 1.0000;
             $rate = $game_type_product->rate;
 
-
             // $transaction['ActualGameTypeID'] = $game_type_ids_array[$key];
             // $transaction['ActualProductID'] = $product_id_array[$key];
 

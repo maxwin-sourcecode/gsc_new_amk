@@ -43,7 +43,7 @@ class BannerController extends Controller
         $image->move(public_path('assets/img/banners/'), $filename); // Save the file
 
         Banner::create([
-            'image' => $filename
+            'image' => $filename,
         ]);
 
         return redirect(route('admin.banners.index'))->with('success', 'New Banner Image Added.');
@@ -76,17 +76,17 @@ class BannerController extends Controller
         $request->validate([
             'image' => 'required',
         ]);
-         //remove banner from localstorage
-         File::delete(public_path('assets/img/banners/'.$banner->image));
+        //remove banner from localstorage
+        File::delete(public_path('assets/img/banners/'.$banner->image));
 
-         // image
-         $image = $request->file('image');
-         $ext = $image->getClientOriginalExtension();
-         $filename = uniqid('banner').'.'.$ext; // Generate a unique filename
-         $image->move(public_path('assets/img/banners/'), $filename); // Save the file
- 
+        // image
+        $image = $request->file('image');
+        $ext = $image->getClientOriginalExtension();
+        $filename = uniqid('banner').'.'.$ext; // Generate a unique filename
+        $image->move(public_path('assets/img/banners/'), $filename); // Save the file
+
         $banner->update([
-            'image' => $filename
+            'image' => $filename,
         ]);
 
         return redirect(route('admin.banners.index'))->with('success', 'Banner Image Updated.');

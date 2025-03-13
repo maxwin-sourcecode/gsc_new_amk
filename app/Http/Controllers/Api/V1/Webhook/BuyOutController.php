@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\V1\Webhook;
 
 use App\Enums\SlotWebhookResponseCode;
 use App\Enums\TransactionName;
+use App\Http\Controllers\Api\V1\Webhook\Traits\BonuUseWebhook;
 use App\Http\Controllers\Api\V1\Webhook\Traits\UseWebhook;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Slot\BonuSlotWebhookRequest;
 use App\Http\Requests\Slot\SlotWebhookRequest;
 use App\Models\Transaction;
 use App\Models\User;
@@ -14,9 +16,6 @@ use App\Services\Slot\SlotWebhookValidator;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Api\V1\Webhook\Traits\BonuUseWebhook;
-use App\Http\Requests\Slot\BonuSlotWebhookRequest;
-
 
 class BuyOutController extends Controller
 {
@@ -36,7 +35,6 @@ class BuyOutController extends Controller
             }
 
             $before_balance = $request->getMember()->balanceFloat;
-
 
             $seamless_transactions = $this->createWagerTransactions($validator->getRequestTransactions(), $event);
 

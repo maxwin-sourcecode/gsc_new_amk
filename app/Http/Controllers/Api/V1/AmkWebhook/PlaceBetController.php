@@ -7,16 +7,15 @@ use App\Enums\TransactionName;
 use App\Http\Controllers\Api\V1\AmkWebhook\Traits\ApiWebhook;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Slot\SlotWebhookRequest;
+use App\Models\Admin\GameType;
+use App\Models\Admin\GameTypeProduct;
+use App\Models\Admin\Product;
 use App\Models\User;
+use App\Services\Slot\SlotWebhookService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use App\Services\Slot\SlotWebhookService;
-use Illuminate\Support\Facades\Http;
-use App\Models\Admin\GameType;
-use App\Models\Admin\Product;
-use App\Models\Admin\GameTypeProduct;
-
 
 class PlaceBetController extends Controller
 {
@@ -38,6 +37,7 @@ class PlaceBetController extends Controller
         $validator = $request->check();
         if ($validator->fails()) {
             Redis::del("wallet:lock:$userId");
+
             return $validator->getResponse();
         }
 
@@ -45,6 +45,7 @@ class PlaceBetController extends Controller
         $transactions = $validator->getRequestTransactions();
         if (! is_array($transactions) || empty($transactions)) {
             Redis::del("wallet:lock:$userId");
+
             return response()->json([
                 'message' => 'Invalid transaction data format.',
                 'details' => $transactions,
@@ -61,6 +62,7 @@ class PlaceBetController extends Controller
             DB::rollBack();
             Redis::del("wallet:lock:$userId");
             Log::error('Error during placeBet', ['error' => $e]);
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
 
@@ -74,6 +76,7 @@ class PlaceBetController extends Controller
         } catch (\Exception $e) {
             Log::error('Error during wallet transfer processing', ['error' => $e]);
             Redis::del("wallet:lock:$userId");
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
 
@@ -99,6 +102,7 @@ class PlaceBetController extends Controller
             $attempts++;
             sleep(1); // Wait for 1 second before retrying
         }
+
         return false;
     }
 

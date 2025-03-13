@@ -22,7 +22,7 @@ class CancelBetController extends Controller
 
     public function cancelBet(SlotWebhookRequest $request)
     {
-            $event = $this->createEvent($request);
+        $event = $this->createEvent($request);
 
         DB::beginTransaction();
         try {
@@ -33,7 +33,6 @@ class CancelBetController extends Controller
             }
 
             $before_balance = $request->getMember()->balanceFloat;
-
 
             $seamless_transactions = $this->createWagerTransactions($validator->getRequestTransactions(), $event, true);
 

@@ -20,7 +20,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 trait BonuUseWebhook
 {
@@ -28,19 +28,18 @@ trait BonuUseWebhook
         BonuSlotWebhookRequest $request,
     ): SeamlessEvent {
         return SeamlessEvent::create([
-            "user_id" => $request->getMember()->id,
-            "message_id" => $request->getMessageID(),
-            "product_id" => $request->getProductID(),
-            "request_time" => $request->getRequestTime(),
-            "raw_data" => $request->all(),
+            'user_id' => $request->getMember()->id,
+            'message_id' => $request->getMessageID(),
+            'product_id' => $request->getProductID(),
+            'request_time' => $request->getRequestTime(),
+            'raw_data' => $request->all(),
         ]);
     }
 
     /**
-     *
-     * @param array<int,RequestTransaction> $requestTransactions
-     * @param SeamlessEvent $event
+     * @param  array<int,RequestTransaction>  $requestTransactions
      * @return array<int, SeamlessTransaction>
+     *
      * @throws MassAssignmentException
      */
     public function createWagerTransactions(
@@ -52,55 +51,78 @@ trait BonuUseWebhook
 
         foreach ($requestTransactions as $requestTransaction) {
             $wager = Wager::firstOrCreate(
-                ["seamless_wager_id" => $requestTransaction->WagerID],
+                ['seamless_wager_id' => $requestTransaction->WagerID],
                 [
-                    "user_id" => $event->user->id,
-                    "seamless_wager_id" => $requestTransaction->WagerID
+                    'user_id' => $event->user->id,
+                    'seamless_wager_id' => $requestTransaction->WagerID,
                 ]
             );
 
             if ($refund) {
                 $wager->update([
-                    "status" => WagerStatus::Refund
+                    'status' => WagerStatus::Refund,
                 ]);
-            } else if (!$wager->wasRecentlyCreated) {
+            } elseif (! $wager->wasRecentlyCreated) {
                 $wager->update([
-                    "status" => $requestTransaction->TransactionAmount > 0 ? WagerStatus::Win : WagerStatus::Lose
+                    'status' => $requestTransaction->TransactionAmount > 0 ? WagerStatus::Win : WagerStatus::Lose,
                 ]);
             }
 
-            $game_type = GameType::where("code", $requestTransaction->GameType)->first();
+            // Fetch game type
+            $game_type = GameType::where('code', $requestTransaction->GameType)->first();
 
-            if (!$game_type) {
-                throw new Exception("Game type not found for {$requestTransaction->GameType}");
+            if (! $game_type) {
+                $errorMessage = "Game type not found for {$requestTransaction->GameType}";
+                Log::error($errorMessage); // Log the error
+                throw new Exception($errorMessage);
+            } else {
+                Log::info("Game type found: {$game_type->code}", ['game_type' => $game_type]);
             }
-            $product = Product::where("code", $requestTransaction->ProductID)->first();
 
-            if (!$product) {
-                throw new Exception("Product not found for {$requestTransaction->ProductID}");
+            // Fetch product
+            $product = Product::where('code', $requestTransaction->ProductID)->first();
+
+            if (! $product) {
+                $errorMessage = "Product not found for {$requestTransaction->ProductID}";
+                Log::error($errorMessage); // Log the error
+                throw new Exception($errorMessage);
+            } else {
+                Log::info("Product found: {$product->code}", ['product' => $product]);
             }
+
             // Fetch the rate from GameTypeProduct
             $game_type_product = GameTypeProduct::where('game_type_id', $game_type->id)
                 ->where('product_id', $product->id)
                 ->first();
 
+            if (! $game_type_product) {
+                $errorMessage = "GameTypeProduct not found for GameType ID: {$game_type->id} and Product ID: {$product->id}";
+                Log::error($errorMessage); // Log the error
+                throw new Exception($errorMessage);
+            } else {
+                Log::info('GameTypeProduct found', [
+                    'game_type_id' => $game_type->id,
+                    'product_id' => $product->id,
+                    'rate' => $game_type_product->rate,
+                ]);
+            }
 
             $rate = $game_type_product->rate;  // Fetch rate for this transaction
-
+            Log::info('Rate fetched for transaction', ['rate' => $rate]);
 
             //$rate = 0;
 
             $seamless_transactions[] = $event->transactions()->create([
-                "user_id" => $event->user_id,
-                "wager_id" => $wager->id,
-                "game_type_id" => $game_type->id,
-                "product_id" => $product->id,
-                "seamless_transaction_id" => $requestTransaction->TransactionID,
-                "rate" => $rate,
-                "transaction_amount" => $requestTransaction->TransactionAmount,
-                "bet_amount" => $requestTransaction->BetAmount,
-                "valid_amount" => $requestTransaction->ValidBetAmount,
-                "status" => $requestTransaction->Status,
+                'user_id' => $event->user_id,
+                'wager_id' => $wager->id,
+                'game_type_id' => $game_type->id,
+                'product_id' => $product->id,
+                'seamless_transaction_id' => $requestTransaction->TransactionID,
+                'rate' => $rate,
+                'transaction_amount' => $requestTransaction->TransactionAmount,
+                'bet_amount' => $requestTransaction->BetAmount,
+                'valid_amount' => $requestTransaction->ValidBetAmount,
+                'status' => $requestTransaction->Status,
             ]);
         }
 
@@ -120,7 +142,6 @@ trait BonuUseWebhook
             );
     }
 }
-
 
 // trait UseWebhook
 // {

@@ -10,7 +10,6 @@ use Yajra\DataTables\DataTables;
 
 class GameListController extends Controller
 {
-    
     public function index(Request $request)
     {
         $games = GameList::with(['gameType', 'product'])->get();

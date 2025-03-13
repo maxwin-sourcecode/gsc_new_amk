@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1\Webhook;
 
-use App\Http\Controllers\Controller;
-use App\Services\Slot\SlotWebhookService;
 use App\Enums\SlotWebhookResponseCode;
 use App\Enums\TransactionName;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\V1\Webhook\Traits\BonuUseWebhook;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Slot\BonuSlotWebhookRequest;
 use App\Models\User;
-
+use App\Services\Slot\SlotWebhookService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class NewBonusController extends Controller
 {
@@ -27,16 +26,16 @@ class NewBonusController extends Controller
         $maxAttempts = 3;
         $lock = false;
 
-        while ($attempts < $maxAttempts && !$lock) {
+        while ($attempts < $maxAttempts && ! $lock) {
             $lock = Redis::set("wallet:lock:$userId", true, 'EX', 15, 'NX'); // 15 seconds lock
             $attempts++;
 
-            if (!$lock) {
+            if (! $lock) {
                 sleep(1); // Wait for 1 second before retrying
             }
         }
 
-        if (!$lock) {
+        if (! $lock) {
             return response()->json([
                 'message' => 'Another transaction is currently processing. Please try again later.',
                 'userId' => $userId,
@@ -49,13 +48,14 @@ class NewBonusController extends Controller
         if ($validator->fails()) {
             // Release Redis lock and return validation error response
             Redis::del("wallet:lock:$userId");
+
             return $validator->getResponse();
         }
 
         // Retrieve transactions from the request
         $transactions = $validator->getRequestTransactions();
 
-        if (!is_array($transactions) || empty($transactions)) {
+        if (! is_array($transactions) || empty($transactions)) {
             Redis::del("wallet:lock:$userId");
 
             return response()->json([
@@ -68,7 +68,6 @@ class NewBonusController extends Controller
         $event = $this->createEvent($request);
 
         DB::beginTransaction();
-
 
         try {
             // Create an event for the bonus transactions
@@ -104,6 +103,7 @@ class NewBonusController extends Controller
             Redis::del("wallet:lock:$userId");
 
             Log::error('Error during bonus processing', ['error' => $e]);
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
 

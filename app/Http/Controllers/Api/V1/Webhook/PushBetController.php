@@ -21,7 +21,7 @@ class PushBetController extends Controller
 
     public function pushBet(SlotWebhookRequest $request)
     {
-            $event = $this->createEvent($request);
+        $event = $this->createEvent($request);
 
         DB::beginTransaction();
         try {
@@ -32,7 +32,6 @@ class PushBetController extends Controller
             }
 
             $before_balance = $request->getMember()->balanceFloat;
-
 
             $this->createWagerTransactions($validator->getRequestTransactions(), $event);
 

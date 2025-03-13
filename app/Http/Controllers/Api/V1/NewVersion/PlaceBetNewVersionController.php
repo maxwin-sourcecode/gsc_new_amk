@@ -7,16 +7,15 @@ use App\Enums\TransactionName;
 use App\Http\Controllers\Api\V1\Webhook\Traits\NewVersionOptimizedBettingProcess;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Slot\SlotWebhookRequest;
+use App\Models\Admin\GameType;
+use App\Models\Admin\GameTypeProduct;
+use App\Models\Admin\Product;
 use App\Models\User;
 use App\Services\Slot\SlotWebhookService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Http;
-use App\Models\Admin\GameType;
-use App\Models\Admin\Product;
-use App\Models\Admin\GameTypeProduct;
-
 
 class PlaceBetNewVersionController extends Controller
 {
@@ -74,7 +73,6 @@ class PlaceBetNewVersionController extends Controller
         $before_balance = $request->getMember()->balanceFloat;
 
         $event = $this->createEvent($request);
-
 
         DB::beginTransaction();
         try {

@@ -38,7 +38,6 @@ class GameResultController extends Controller
 
             $before_balance = $request->getMember()->balanceFloat;
 
-
             $seamless_transactions = $this->createWagerTransactions($validator->getRequestTransactions(), $event);
 
             foreach ($seamless_transactions as $seamless_transaction) {

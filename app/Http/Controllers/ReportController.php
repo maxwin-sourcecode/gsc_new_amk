@@ -31,7 +31,7 @@ class ReportController extends Controller
                 DB::raw('COUNT(*) as stake_count')
             );
         if (isset($request->start_date) && isset($request->end_date)) {
-            $query->whereBetween('reports.created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
+            $query->whereBetween('reports.created_at', [$request->start_date.' 00:00:00', $request->end_date.' 23:59:59']);
         } elseif (isset($request->member_name)) {
             $query->where('reports.member_name', $request->member_name);
         } else {
@@ -63,7 +63,7 @@ class ReportController extends Controller
                 'products.name as product_name',
                 DB::raw('(reports.payout_amount - reports.valid_bet_amount) as win_or_lose')
             )->get();
-       
+
         $products = Product::all();
 
         return view('report.detail', compact('products', 'userName', 'reports'));

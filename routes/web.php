@@ -1,10 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\LoginController;
-use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Agent\AgentController;
 use App\Http\Controllers\Admin\BannerAds\BannerAdsController;
 use App\Http\Controllers\Admin\BannerController;
@@ -14,6 +9,7 @@ use App\Http\Controllers\Admin\Deposit\DepositRequestController;
 use App\Http\Controllers\Admin\GameListController;
 use App\Http\Controllers\Admin\GameTypeProductController;
 use App\Http\Controllers\Admin\GetBetDetailController;
+use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\Master\MasterController;
 use App\Http\Controllers\Admin\PaymentTypeController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -23,7 +19,12 @@ use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
 use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
+
 require_once __DIR__.'/admin.php';
 
 Auth::routes();

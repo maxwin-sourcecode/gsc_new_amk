@@ -12,6 +12,7 @@ class BannerAds extends Model
     protected $fillable = [
         'image',
     ];
+
     protected $appends = ['img_url'];
 
     protected $table = 'banner_ads';

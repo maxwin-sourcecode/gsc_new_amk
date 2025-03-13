@@ -20,7 +20,7 @@ trait PlaceBetWebhook
         $userId = $request->getMember()->id;
         $lock = Redis::set("wallet:lock:$userId", true, 'EX', 10, 'NX');  // Redis lock
 
-        if (!$lock) {
+        if (! $lock) {
             return response()->json(['message' => 'The wallet is currently being updated. Please try again later.'], 409);
         }
 
@@ -29,6 +29,7 @@ trait PlaceBetWebhook
             $validator = $request->check();
             if ($validator->fails()) {
                 Redis::del("wallet:lock:$userId");
+
                 return $validator->getResponse();
             }
 
@@ -68,6 +69,7 @@ trait PlaceBetWebhook
         } catch (Exception $e) {
             DB::rollBack();
             Redis::del("wallet:lock::$userId");
+
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
@@ -95,7 +97,9 @@ trait PlaceBetWebhook
             } catch (\Illuminate\Database\QueryException $e) {
                 if ($e->getCode() === '40001') {
                     $retryCount++;
-                    if ($retryCount >= $maxRetries) throw $e;
+                    if ($retryCount >= $maxRetries) {
+                        throw $e;
+                    }
                     sleep(pow(2, $retryCount));
                 } else {
                     throw $e;
@@ -121,7 +125,6 @@ trait PlaceBetWebhook
 
         return count($bets).' bets inserted successfully.';
     }
-
 
     public function createWagerTransactions(array $betBatch, SeamlessEvent $event)
     {
@@ -158,7 +161,7 @@ trait PlaceBetWebhook
 
                         $existingWager = Wager::where('seamless_wager_id', $transactionData['WagerID'])->lockForUpdate()->first();
 
-                        if (!$existingWager) {
+                        if (! $existingWager) {
                             $wagerData[] = [
                                 'user_id' => $userId,
                                 'seamless_wager_id' => $transactionData['WagerID'],
@@ -185,10 +188,10 @@ trait PlaceBetWebhook
                         ];
                     }
 
-                    if (!empty($wagerData)) {
+                    if (! empty($wagerData)) {
                         DB::table('wagers')->insert($wagerData);
                     }
-                    if (!empty($seamlessTransactionsData)) {
+                    if (! empty($seamlessTransactionsData)) {
                         DB::table('seamless_transactions')->insert($seamlessTransactionsData);
                     }
                 });
@@ -196,7 +199,9 @@ trait PlaceBetWebhook
             } catch (\Illuminate\Database\QueryException $e) {
                 if ($e->getCode() === '40001') {
                     $retryCount++;
-                    if ($retryCount >= $maxRetries) throw $e;
+                    if ($retryCount >= $maxRetries) {
+                        throw $e;
+                    }
                     sleep(pow(2, $retryCount));
                 } else {
                     throw $e;
@@ -214,7 +219,9 @@ trait PlaceBetWebhook
             } catch (\Illuminate\Database\QueryException $e) {
                 if ($e->getCode() === '40001') {
                     $retryCount++;
-                    if ($retryCount >= $maxRetries) throw $e;
+                    if ($retryCount >= $maxRetries) {
+                        throw $e;
+                    }
                     sleep(pow(2, $retryCount));
                 } else {
                     throw $e;

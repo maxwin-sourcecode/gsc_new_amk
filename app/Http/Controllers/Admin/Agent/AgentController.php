@@ -92,7 +92,7 @@ class AgentController extends Controller
         if ($request->hasFile('agent_logo')) {
             $image = $request->file('agent_logo');
             $ext = $image->getClientOriginalExtension();
-            $filename = uniqid('logo_') . '.' . $ext;
+            $filename = uniqid('logo_').'.'.$ext;
             $image->move(public_path('assets/img/sitelogo/'), $filename);
             $request->agent_logo = $filename;
         }
@@ -171,7 +171,7 @@ class AgentController extends Controller
     {
         $param = $request->validate([
             'name' => 'required|string',
-            'phone' => ['nullable', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'unique:users,phone,' . $id],
+            'phone' => ['nullable', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'unique:users,phone,'.$id],
             'payment_type_id' => 'required|exists:payment_types,id',
             'account_number' => 'required|string',
             'account_name' => 'required|string',
@@ -183,7 +183,7 @@ class AgentController extends Controller
         if ($request->file('agent_logo')) {
             $image = $request->file('agent_logo');
             $ext = $image->getClientOriginalExtension();
-            $filename = uniqid('logo_') . '.' . $ext;
+            $filename = uniqid('logo_').'.'.$ext;
             $image->move(public_path('assets/img/sitelogo/'), $filename);
 
             $param['agent_logo'] = $filename;
@@ -309,7 +309,7 @@ class AgentController extends Controller
     {
         $randomNumber = mt_rand(10000000, 99999999);
 
-        return 'LKM' . $randomNumber;
+        return 'LKM'.$randomNumber;
     }
 
     public function banAgent($id)
@@ -328,7 +328,7 @@ class AgentController extends Controller
 
         return redirect()->back()->with(
             'success',
-            'User ' . ($user->status == 1 ? 'activated' : 'banned') . ' successfully'
+            'User '.($user->status == 1 ? 'activated' : 'banned').' successfully'
         );
     }
 

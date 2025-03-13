@@ -9,7 +9,6 @@ enum UserType: int
     case Player = 30;
     case SuperAdmin = 40;
 
-
     public static function usernameLength(UserType $type)
     {
         return match ($type) {

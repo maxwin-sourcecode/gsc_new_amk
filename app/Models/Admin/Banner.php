@@ -12,7 +12,7 @@ class Banner extends Model
     protected $fillable = [
         'image',
     ];
-    
+
     protected $appends = ['img_url'];
 
     public function getImgUrlAttribute()
