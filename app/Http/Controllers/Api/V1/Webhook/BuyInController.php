@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\V1\Webhook\Traits\BonuUseWebhook;
 use App\Http\Requests\Slot\BonuSlotWebhookRequest;
+use App\Http\Controllers\Api\V1\Webhook\Traits\NewVersionOptimizedBettingProcess;
 
 
 class BuyInController extends Controller
@@ -25,6 +26,7 @@ class BuyInController extends Controller
 
     public function buyIn(BonuSlotWebhookRequest $request)
     {
+        $event = $this->createEvent($request);
         DB::beginTransaction();
         try {
             $validator = $request->check();
@@ -35,7 +37,6 @@ class BuyInController extends Controller
 
             $before_balance = $request->getMember()->balanceFloat;
 
-            $event = $this->createEvent($request);
 
             $seamless_transactions = $this->createWagerTransactions($validator->getRequestTransactions(), $event);
 

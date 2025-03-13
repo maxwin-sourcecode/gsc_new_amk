@@ -79,8 +79,16 @@ trait BonuUseWebhook
             if (!$product) {
                 throw new Exception("Product not found for {$requestTransaction->ProductID}");
             }
+            // Fetch the rate from GameTypeProduct
+            $game_type_product = GameTypeProduct::where('game_type_id', $game_type->id)
+                ->where('product_id', $product->id)
+                ->first();
 
-            $rate = 0;
+
+            $rate = $game_type_product->rate;  // Fetch rate for this transaction
+
+
+            //$rate = 0;
 
             $seamless_transactions[] = $event->transactions()->create([
                 "user_id" => $event->user_id,

@@ -26,6 +26,8 @@ class GameResultController extends Controller
 
     public function gameResult(SlotWebhookRequest $request)
     {
+        $event = $this->createEvent($request);
+
         DB::beginTransaction();
         try {
             $validator = $request->check();
@@ -36,7 +38,6 @@ class GameResultController extends Controller
 
             $before_balance = $request->getMember()->balanceFloat;
 
-            $event = $this->createEvent($request);
 
             $seamless_transactions = $this->createWagerTransactions($validator->getRequestTransactions(), $event);
 
