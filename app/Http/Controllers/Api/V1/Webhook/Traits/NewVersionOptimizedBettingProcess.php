@@ -29,6 +29,9 @@ trait NewVersionOptimizedBettingProcess
             return response()->json(['message' => 'The wallet is currently being updated. Please try again later.'], 409);
         }
 
+         // Create and store the event in the database
+            $event = $this->createEvent($request);
+
         DB::beginTransaction();
         try {
             // Validate the request
@@ -41,8 +44,7 @@ trait NewVersionOptimizedBettingProcess
 
             $before_balance = $request->getMember()->balanceFloat;
 
-            // Create and store the event in the database
-            $event = $this->createEvent($request);
+
 
             // Retry logic for creating wager transactions with exponential backoff
             $seamless_transactions = $this->retryOnDeadlock(function () use ($validator, $event) {
@@ -138,9 +140,7 @@ trait NewVersionOptimizedBettingProcess
                                 'TransactionAmount' => $transaction->TransactionAmount,
                                 'PayoutAmount' => $transaction->PayoutAmount,
                                 'ValidBetAmount' => $transaction->ValidBetAmount,
-                                'Rate' => $transaction->Rate,
-                                'ActualGameTypeID' => $transaction->ActualGameTypeID,
-                                'ActualProductID' => $transaction->ActualProductID,
+
                             ];
                         } else {
                             throw new \Exception('Invalid transaction data format.');
@@ -148,6 +148,30 @@ trait NewVersionOptimizedBettingProcess
 
                         // Now, use the $transactionData array as expected
                         $existingWager = Wager::where('seamless_wager_id', $transactionData['WagerID'])->lockForUpdate()->first();
+
+                         // Fetch game_type and product
+                    $game_type = GameType::where('code', $transactionData['GameType'])->first();
+                    if (! $game_type) {
+                        throw new \Exception("Game type not found for {$transactionData['GameType']}");
+                    }
+
+                    $product = Product::where('code', $transactionData['ProductID'])->first();
+                    if (! $product) {
+                        throw new \Exception("Product not found for {$transactionData['ProductID']}");
+                    }
+
+                    // Fetch the rate from GameTypeProduct
+                    $game_type_product = GameTypeProduct::where('game_type_id', $game_type->id)
+                        ->where('product_id', $product->id)
+                        ->first();
+                    // if (! $game_type_product) {
+                    //     throw new \Exception('GameTypeProduct combination not found.');
+                    // }
+
+                    $rate = $game_type_product->rate;  // Fetch rate for this transaction
+
+                    Log::info('Fetched rate for transaction', ['rate' => $rate]);
+
 
                         if (! $existingWager) {
                             // Collect wager data for batch insert
