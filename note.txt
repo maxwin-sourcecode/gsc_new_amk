@@ -7,7 +7,7 @@ tail -f /var/www/gsc_new_amk/storage/logs/laravel.log
 sudo su ubuntu
 crontab -e
 
-* * * * * cd /var/www/gsc_sale_script_gp_a && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/gsc_new_amk && php artisan schedule:run >> /dev/null 2>&1
 
 tail -f /var/log/mysql/error.log
 
