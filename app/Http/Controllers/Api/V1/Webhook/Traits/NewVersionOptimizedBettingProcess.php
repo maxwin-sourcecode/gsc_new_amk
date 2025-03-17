@@ -207,7 +207,7 @@ trait NewVersionOptimizedBettingProcess
                 //     }
                 // });
 
-                DB::transaction(function () use ($betBatch, $userId, $seamlessEventId) {
+    DB::transaction(function () use ($betBatch, $userId, $seamlessEventId) {
     // Set the transaction isolation level to READ COMMITTED to reduce deadlock likelihood
     DB::statement('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
 
